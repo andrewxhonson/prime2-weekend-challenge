@@ -19,6 +19,11 @@ app.get('/calculate', function(req, res) {
     res.send(history);
 });
 
+app.post('/clear', function(req, res) {
+    history = [];
+    res.sendStatus(200);
+});
+
 app.listen(port, function() {
     console.log('listening on', port);
 });
