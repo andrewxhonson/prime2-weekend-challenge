@@ -10,8 +10,14 @@ app.use(express.urlencoded({extended: true}));
 
 app.post('/calculate', function(req, res) {
     let result = calculate(req.body.x, req.body.y, req.body.operation);
+    let info = {
+        x: req.body.x,
+        y: req.body.y,
+        operation: req.body.operation,
+        result: result
+    }
     console.log('RESULT', result);
-    history.push(result);
+    history.push(info);
     res.sendStatus(200);
 });
 
@@ -19,7 +25,7 @@ app.get('/calculate', function(req, res) {
     res.send(history);
 });
 
-app.post('/clear', function(req, res) {
+app.delete('/clear', function(req, res) {
     history = [];
     res.sendStatus(200);
 });

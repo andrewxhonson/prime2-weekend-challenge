@@ -6,31 +6,52 @@ function start() {
     $('.operation').on('click', calculate);
     $('#clear').on('click', clear);
     getResults();
+
+    $('#history').on('click', 'li', recalculate);
+}
+
+function recalculate() {
+    let data = $(this).data();
+    sendCalculation(data.x, data.y, data.operation);
+}
+
+function sendCalculation(x, y, operation) {
+    $.ajax({
+        url: '/calculate',
+        method: 'POST',
+        data: {
+            x: x,
+            y: y,
+            operation: operation
+        },
+        success: function(response) {
+            console.log('post success:', response);
+            getResults();
+
+        },
+        error: function(response) {
+            console.log('post error:', response);
+        }
+    });
 }
 
 function calculate() {
     let x = $('#valueX').val();
     let y = $('#valueY').val();
-    let operation = $(this).attr('id');
+    let operationName = $(this).attr('id');
+    let operation;
+    if (operationName === 'add') {
+        operation = "+";
+    } else if (operationName === 'subtract') {
+        operation = "-";
+    } else if (operationName === 'multiply') {
+        operation = "*";
+    } else {
+        operation = "/";
+    }
 
     if (x !== "" && y !== "") {
-        $.ajax({
-            url: '/calculate',
-            method: 'POST',
-            data: {
-                x: x,
-                y: y,
-                operation: operation
-            },
-            success: function(response) {
-                console.log('post success:', response);
-                getResults();
-
-            },
-            error: function(response) {
-                console.log('get error:', response);
-            }
-        });
+        sendCalculation(x, y, operation);
     } else {
         alert('Both numbers must be filled in!');
     }
@@ -39,15 +60,15 @@ function calculate() {
 function clear() {
     $.ajax({
         url: '/clear',
-        method: 'POST',
+        method: 'DELETE',
         data: {},
         success: function(response) {
-            console.log('post success:', response);
+            console.log('delete success:', response);
             getResults();
 
         },
         error: function(response) {
-            console.log('get error:', response);
+            console.log('delete error:', response);
         }
     });
 }
@@ -57,9 +78,11 @@ function display(results) {
     let resultsDiv = $('#history');
     
     for (let i = 0; i < results.length; i++) {
-        resultsList.append('<li>' + results[i] + '</li>');
+        let newListItem = $('<li>' + results[i].x + " " + results[i].operation + " " + results[i].y + " = " + results[i].result + '</li>');
+        newListItem.data(results[i]);
+        resultsList.append(newListItem);
     }
-console.log(resultsList);
+
     resultsDiv.empty();
     resultsDiv.append(resultsList);
 }
