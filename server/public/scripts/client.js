@@ -23,10 +23,22 @@ function calculate() {
                 operation: operation
             },
             success: function(response) {
-                console.log(response);
+                console.log('post success:', response);
+
+                $.ajax({
+                    url: '/calculate',
+                    method: 'GET',
+                    success: function(response) {
+                        console.log('get success:', response);
+                    },
+                    error: function(response) {
+                        console.log('get error:', response);
+                    }
+                })
+
             },
             error: function(response) {
-                console.log(response);
+                console.log('get error:', response);
             }
         });
     } else {
